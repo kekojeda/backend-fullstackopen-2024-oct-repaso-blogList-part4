@@ -1,9 +1,9 @@
 POST http://localhost:3001/api/blogs/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imtla28yIiwiaWQiOiI2NzI5NDJlODliMmExYzlkOTQzY2I5MzQiLCJpYXQiOjE3MzA3NTkxNzl9.sY1NLQaz6vJW0Na8mLr4a-A5wSvr4ypV2QTUuH1bO18
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imtla28yIiwiaWQiOiI2NzJjYmZjMTZhMGRmMzk1ZGQ1NThiNjEiLCJpYXQiOjE3MzA5ODcwODAsImV4cCI6MTczMDk5MDY4MH0.-pnSIZDfVP62Ix2RPxrPnwjBYlNqsHeQuGp9xf5UX6I
 
 {
-    "title": "titulo blog con user2 token",
+    "title": "blog 2",
     "author": "token",
      "url": "wqeqeqwe.comqweqwe2",
      "likes": 23
