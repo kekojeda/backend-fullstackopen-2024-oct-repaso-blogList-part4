@@ -14,10 +14,10 @@ const getTokenFrom = request => {
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
-  .find({})
-  .populate('user', { username: 1, name: 1 })
+    .find({})
+    .populate('user', { username: 1, name: 1 })
   response.json(blogs)
-  
+
 })
 
 blogsRouter.get('/:id', (request, response, next) => {
@@ -46,84 +46,63 @@ blogsRouter.post('/', async (request, response) => {
 
   // Verificación de campos requeridos (title y url)
   if (!title || !url) {
-      return response.status(400).json({ error: 'title or url missing' });
+    return response.status(400).json({ error: 'title or url missing' });
   }
 
   try {
-      const blog = new Blog({
-          title,
-          url,
-          author,
-          likes: likes || 0, // Asignar 0 si 'likes' no está presente
-          user: user.id
-      });
+    const blog = new Blog({
+      title,
+      url,
+      author,
+      likes: likes || 0, // Asignar 0 si 'likes' no está presente
+      user: user.id
+    });
 
-      const savedBlog = await blog.save();
-      user.blogs = user.blogs.concat(savedBlog._id)
-  await user.save()
-      response.status(201).json(savedBlog);
+    const savedBlog = await blog.save();
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
+    response.status(201).json(savedBlog);
 
   } catch (error) {
-      response.status(500).json({ error: 'Failed to save blog' });
+    response.status(500).json({ error: 'Failed to save blog' });
   }
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
   try {
-      const blog = await Blog.findByIdAndDelete(request.params.id)
-      if (blog) {
-          response.status(204).end()
-      } else {
-          response.status(404).json({ error: 'Blog not found' })
-      }
+    const blog = await Blog.findByIdAndDelete(request.params.id)
+    if (blog) {
+      response.status(204).end()
+    } else {
+      response.status(404).json({ error: 'Blog not found' })
+    }
   } catch (error) {
-      response.status(400).json({ error: 'Malformatted id' })
+    response.status(400).json({ error: 'Malformatted id' })
   }
 })
 
 
 blogsRouter.put('/:id', async (request, response) => {
-  const { likes } = request.body
+  const { user, likes, author, title, url } = request.body;
 
   try {
-      const updatedBlog = await Blog.findByIdAndUpdate(
-          request.params.id,
-          { likes },
-          { new: true, runValidators: true }
-      )
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      request.params.id,
+      { user, likes, author, title, url },
+      { new: true, runValidators: true }
+    )
 
-      if (updatedBlog) {
-          response.json(updatedBlog)
-      } else {
-          response.status(404).json({ error: 'Blog not found' })
-      }
+    if (updatedBlog) {
+      response.json(updatedBlog)
+    } else {
+      response.status(404).json({ error: 'Blog not found' })
+    }
   } catch (error) {
-      response.status(400).json({ error: 'Malformatted id' })
+    response.status(400).json({ error: 'Malformatted id' })
   }
 })
 
 
-// notesRouter.delete('/:id', (request, response, next) => {
-//   Blog.findByIdAndDelete(request.params.id)
-//     .then(() => {
-//       response.status(204).end()
-//     })
-//     .catch(error => next(error))
-// })
 
-// blogsRouter.put('/:id', (request, response, next) => {
-//   const body = request.body
-
-//   const note = {
-//     content: body.content,
-//     important: body.important,
-//   }
-
-//   Blog.findByIdAndUpdate(request.params.id, note, { new: true })
-//     .then(updatedNote => {
-//       response.json(updatedNote)
-//     })
-//     .catch(error => next(error))
-// })
 
 module.exports = blogsRouter
