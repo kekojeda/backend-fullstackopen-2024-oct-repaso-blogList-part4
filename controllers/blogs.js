@@ -69,18 +69,28 @@ blogsRouter.post('/', async (request, response) => {
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
-  try {
-    const blog = await Blog.findByIdAndDelete(request.params.id)
-    if (blog) {
-      response.status(204).end()
-    } else {
-      response.status(404).json({ error: 'Blog not found' })
-    }
-  } catch (error) {
-    response.status(400).json({ error: 'Malformatted id' })
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'Token inválido o faltante' });
   }
-})
 
+  const blog = await Blog.findById(request.params.id);
+
+  if (!blog) {
+    return response.status(404).json({ error: 'Blog no encontrado' });
+  }
+
+  if (blog.user.toString() !== decodedToken.id) {
+    return response.status(401).json({ error: 'No estás autorizado para eliminar este blog' });
+  }
+
+  try {
+    await Blog.findByIdAndDelete(request.params.id);
+    response.status(204).end();
+  } catch (error) {
+    response.status(400).json({ error: 'ID malformado' });
+  }
+});
 
 blogsRouter.put('/:id', async (request, response) => {
   const { user, likes, author, title, url } = request.body;
